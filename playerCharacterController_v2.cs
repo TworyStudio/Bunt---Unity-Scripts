@@ -139,16 +139,30 @@ public class playerCharacterController_v2 : MonoBehaviour {
 
     private void manageAnimation(Vector2 movement)
     {
-        animator.SetFloat("Horizontal", movement.x);
-        animator.SetFloat("Vertical", movement.y);
+        animator.SetFloat("horizontal", movement.x);
+        animator.SetFloat("vertical", movement.y);
 
         if(movement.magnitude != 0)
         {
             animator.SetBool("isMoving", true);
+            saveLastDirectionFaced(movement);
         }
         else
         {
             animator.SetBool("isMoving", false);
+        }
+    }
+
+    private void saveLastDirectionFaced(Vector2 directionFaced)
+    {
+        if(directionFaced.x != 0)
+        {
+            animator.SetFloat("horizontalDirection", directionFaced.x);
+            animator.SetFloat("verticalDirection", 0);
+        }
+        else {
+            animator.SetFloat("verticalDirection", directionFaced.y);
+            animator.SetFloat("horizontalDirection", 0);
         }
     }
 }
