@@ -4,19 +4,17 @@ using UnityEngine;
 
 public class playerCharacterController_v2 : MonoBehaviour {
 
-    private Rigidbody2D body;
     public Animator animator;
-    float horizontalInput;
-    float verticalInput;
+    int horizontalInput;
+    int verticalInput;
     Vector2 movementVector;
     string direction;
     public float movementSpeed;
+
+    private Rigidbody2D body;
     private bool isMovingHorizontally;
     private bool isMovingVertically;
 
-
-
-    // Use this for initialization
     void Start()
     {
         body = GetComponent<Rigidbody2D>();
@@ -24,10 +22,9 @@ public class playerCharacterController_v2 : MonoBehaviour {
         isMovingVertically = false;
     }
 
-    // Update is called once per frame
     void Update () {
-        horizontalInput = Input.GetAxisRaw("Horizontal");
-        verticalInput = Input.GetAxisRaw("Vertical");
+        horizontalInput = (int)(Input.GetAxisRaw("Horizontal"));
+        verticalInput = (int)(Input.GetAxisRaw("Vertical"));
         movementVector = body.velocity;
 
         manageMovement(horizontalInput, verticalInput);
@@ -38,9 +35,14 @@ public class playerCharacterController_v2 : MonoBehaviour {
     {
         direction = determineDirection(x, y);
         move(direction);
+        setMovementFlags(direction);
     }
 
     private string determineDirection(float x, float y)
+    //This function allows switching axis while any axis button is already held down.
+    //Without it it's possible to switch axis only one way (eg. from vertical to horizontal,
+    //but not the other way around) when opposing axis buttons are pressed at the same time
+    //This solution is specific for keyboards.
     {
         x = convertInputToPositiveValue(x)*2;
         y = convertInputToPositiveValue(y)*3;
@@ -79,11 +81,11 @@ public class playerCharacterController_v2 : MonoBehaviour {
         {
             if (isMovingHorizontally)
             {
-                moveVerticallyWithoutFlagging();
+                moveVertically();
             }
             else if (isMovingVertically)
             {
-                moveHorizontallyWithoutFlagging();
+                moveHorizontally();
             }
         }
 
@@ -106,35 +108,38 @@ public class playerCharacterController_v2 : MonoBehaviour {
         }
     }
 
+    private void setMovementFlags(string movementDirection)
+    {
+        if(movementDirection == "Horizontal")
+        {
+            isMovingHorizontally = true;
+            isMovingVertically = false;
+        }
+        else if(movementDirection == "Vertical")
+        {
+            isMovingHorizontally = false;
+            isMovingVertically = true;
+        }
+        else if(movementDirection == "Stationary")
+        {
+            isMovingHorizontally = false;
+            isMovingVertically = false;
+        }
+    }
+
     private Vector2 moveHorizontally()
     {
-        isMovingHorizontally = true;
-        isMovingVertically = false;
         return body.velocity = new Vector2((horizontalInput * movementSpeed), 0);
     }
 
     private Vector2 moveVertically()
     {
-        isMovingVertically = true;
-        isMovingHorizontally = false;
         return body.velocity = new Vector2(0, (verticalInput * movementSpeed));
     }
 
     private Vector2 stopMovement()
     {
-        isMovingVertically = false;
-        isMovingHorizontally = false;
         return body.velocity = new Vector2(0, 0);
-    }
-
-    private Vector2 moveHorizontallyWithoutFlagging()
-    {
-        return body.velocity = new Vector2((horizontalInput * movementSpeed), 0);
-    }
-
-    private Vector2 moveVerticallyWithoutFlagging()
-    {
-        return body.velocity = new Vector2(0, (verticalInput * movementSpeed));
     }
 
     private void manageAnimation(Vector2 movement)
