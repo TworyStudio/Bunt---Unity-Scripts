@@ -22,7 +22,13 @@ public class playerCharacterController_v2 : MonoBehaviour {
         isMovingVertically = false;
     }
 
-    void Update () {
+    void Update() {
+        if (Input.GetButtonDown("Use")){
+            stopMovement();
+            animator.SetTrigger("use");
+            Debug.Log("Use button pressed");
+        }
+
         horizontalInput = (int)(Input.GetAxisRaw("Horizontal"));
         verticalInput = (int)(Input.GetAxisRaw("Vertical"));
         movementVector = body.velocity;
