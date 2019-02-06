@@ -5,37 +5,60 @@ using UnityEngine;
 public class playerCharacterController_v2 : MonoBehaviour {
 
     public Animator animator;
-    int horizontalInput;
-    int verticalInput;
-    Vector2 movementVector;
-    string direction;
     public float movementSpeed;
+    public float useActionDuration;
 
     private Rigidbody2D body;
     private bool isMovingHorizontally;
     private bool isMovingVertically;
+    private bool canMove;
+
+    int horizontalInput;
+    int verticalInput;
+    Vector2 movementVector;
+    string direction;
+
 
     void Start()
     {
         body = GetComponent<Rigidbody2D>();
         isMovingHorizontally = false;
         isMovingVertically = false;
+        canMove = true;
+        useActionDuration = 0.35f; 
     }
 
     void Update() {
-        if (Input.GetButtonDown("Use")){
-            stopMovement();
-            animator.SetTrigger("use");
-            Debug.Log("Use button pressed");
+        if (Input.GetButtonDown("Use"))
+        {
+            StartCoroutine(Use());
         }
-
-        horizontalInput = (int)(Input.GetAxisRaw("Horizontal"));
-        verticalInput = (int)(Input.GetAxisRaw("Vertical"));
-        movementVector = body.velocity;
-
-        manageMovement(horizontalInput, verticalInput);
+        else if (canMove == true)
+        {
+            horizontalInput = (int)(Input.GetAxisRaw("Horizontal"));
+            verticalInput = (int)(Input.GetAxisRaw("Vertical"));
+            movementVector = body.velocity;
+            manageMovement(horizontalInput, verticalInput);
+        }
+        else
+        {
+            stopMovement();
+            movementVector = body.velocity;
+        }
         manageAnimation(movementVector);
 	}
+
+    IEnumerator Use()
+    {
+        animator.SetBool("isMoving", false);
+        animator.SetBool("isUsing", true);
+        canMove = false;
+        stopMovement();
+        yield return new WaitForSeconds(useActionDuration);
+        canMove = true;
+        animator.SetBool("isUsing", false);
+        Debug.Log("Use button pressed");
+    }
 
     private void manageMovement(float x, float y)
     {
