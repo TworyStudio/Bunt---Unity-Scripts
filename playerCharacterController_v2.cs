@@ -12,16 +12,19 @@ public class playerCharacterController_v2 : MonoBehaviour {
     private bool isMovingHorizontally;
     private bool isMovingVertically;
     private bool canMove;
+    private BoxCollider2D boxCollider;
 
     int horizontalInput;
     int verticalInput;
     Vector2 movementVector;
     string direction;
 
+    public Transform useActionTarget;
 
     void Start()
     {
         body = GetComponent<Rigidbody2D>();
+        boxCollider = GetComponent<BoxCollider2D>();
         isMovingHorizontally = false;
         isMovingVertically = false;
         canMove = true;
@@ -32,6 +35,7 @@ public class playerCharacterController_v2 : MonoBehaviour {
         if (Input.GetButtonDown("Use"))
         {
             StartCoroutine(Use());
+            PerformUseAction();
         }
         else if (canMove == true)
         {
@@ -58,6 +62,46 @@ public class playerCharacterController_v2 : MonoBehaviour {
         canMove = true;
         animator.SetBool("isUsing", false);
         Debug.Log("Use button pressed");
+    }
+
+    private void PerformUseAction()
+    {
+        setOwnBoxColliderStateTo(false);
+
+        float directionX = animator.GetFloat("horizontalDirection");
+        float directionY = animator.GetFloat("verticalDirection");
+
+        Vector2 startingPosition = transform.position;
+
+        Vector2 useDirection = new Vector2(0, 0);
+
+        if (directionX < 0)
+        {
+            useDirection = Vector2.left;
+        }
+        else if (directionX > 0)
+        {
+            useDirection = Vector2.right;
+        }
+        else if (directionY < 0)
+        {
+            useDirection = Vector2.down;
+        }
+        else useDirection = Vector2.up;
+
+        RaycastHit2D hit = Physics2D.Raycast(startingPosition, useDirection);
+        string hitObjectName = hit.collider.gameObject.name;
+
+        Debug.Log("useDirection = " + useDirection);
+        Debug.Log("hitObjectName = " + hitObjectName);
+
+        setOwnBoxColliderStateTo(true);
+    }
+
+    private void setOwnBoxColliderStateTo(bool state)
+    {
+        //Flip the collider on or off to avoid raycasting problems
+        boxCollider.enabled = state;
     }
 
     private void manageMovement(float x, float y)
