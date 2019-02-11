@@ -89,13 +89,22 @@ public class playerCharacterController_v2 : MonoBehaviour {
         }
         else useDirection = Vector2.up;
 
-        RaycastHit2D hit = Physics2D.Raycast(startingPosition, useDirection);
-        string hitObjectName = hit.collider.gameObject.name;
+        float useRange = 1f;
+        RaycastHit2D hit = Physics2D.Raycast(startingPosition, useDirection, useRange);
+
+        setOwnBoxColliderStateTo(true);
+
+        GameObject hitObject = hit.collider.gameObject;
+        string hitObjectName = hitObject.name;
 
         Debug.Log("useDirection = " + useDirection);
         Debug.Log("hitObjectName = " + hitObjectName);
 
-        setOwnBoxColliderStateTo(true);
+        if (hitObject.CompareTag("Door"))
+        {
+            hitObject.GetComponent<Door>().Use();
+        }
+
     }
 
     private void setOwnBoxColliderStateTo(bool state)
