@@ -4,7 +4,7 @@ using UnityEngine;
 
 public class Door : MonoBehaviour
 {
-    public bool isOpen;
+    private bool isOpen;
     public Animator animator;
     private BoxCollider2D boxCollider;
 
@@ -12,13 +12,13 @@ public class Door : MonoBehaviour
     // Start is called before the first frame update
     void Start()
     {
-        isOpen = false;
         animator = GetComponent<Animator>();
         boxCollider = GetComponent<BoxCollider2D>();
     }
 
     public void Use()
     {
+        isOpen = animator.GetBool("isOpen");
         if (isOpen == true)
         {
             MakeDoor("close");
@@ -28,11 +28,11 @@ public class Door : MonoBehaviour
 
     private void MakeDoor(string openOrClose)
     {
-        bool doorState = SetDoorState(openOrClose);
+            bool doorState = SetDoorState(openOrClose);
 
-        animator.SetTrigger(openOrClose);
-        animator.SetBool("isOpen", doorState);
-        boxCollider.enabled = !doorState;
+            animator.SetTrigger(openOrClose);
+            animator.SetBool("isOpen", doorState);
+            boxCollider.isTrigger = doorState;
     }
 
     private bool SetDoorState(string state)
@@ -43,19 +43,5 @@ public class Door : MonoBehaviour
             Debug.Log("SetDoorState function received invalid door state name. Returning default value.");
             return false;
         }
-    }
-
-    private void OpenDoor()
-    {
-        animator.SetTrigger("open");
-        animator.SetBool("isOpen", true);
-        boxCollider.enabled = false;
-    }
-
-    private void CloseDoor()
-    {
-        animator.SetTrigger("close");
-        animator.SetBool("isOpen", false);
-        boxCollider.enabled = true;
     }
 }
