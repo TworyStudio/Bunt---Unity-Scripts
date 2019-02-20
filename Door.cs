@@ -6,8 +6,8 @@ public class Door : MonoBehaviour
 {
     private bool isOpen;
     public Animator animator;
+    public float force;
     private BoxCollider2D boxCollider;
-
 
     // Start is called before the first frame update
     void Start()
@@ -28,18 +28,19 @@ public class Door : MonoBehaviour
 
     private void MakeDoor(string openOrClose)
     {
-            bool doorState = SetDoorState(openOrClose);
+        bool doorState = SetDoorState(openOrClose);
 
-            animator.SetTrigger(openOrClose);
-            animator.SetBool("isOpen", doorState);
-            boxCollider.isTrigger = doorState;
+        animator.SetTrigger(openOrClose);
+        animator.SetBool("isOpen", doorState);
+        boxCollider.isTrigger = doorState;
     }
 
     private bool SetDoorState(string state)
     {
         if (state == "open") return true;
         else if (state == "close") return false;
-        else {
+        else
+        {
             Debug.Log("SetDoorState function received invalid door state name. Returning default value.");
             return false;
         }

@@ -7,6 +7,7 @@ public class playerCharacterController_v2 : MonoBehaviour {
     public Animator animator;
     public float movementSpeed;
     public float useActionDuration;
+    public bool canUse;
 
     private Rigidbody2D body;
     private bool isMovingHorizontally;
@@ -28,11 +29,12 @@ public class playerCharacterController_v2 : MonoBehaviour {
         isMovingHorizontally = false;
         isMovingVertically = false;
         canMove = true;
+        canUse = true;
         useActionDuration = 0.35f; 
     }
 
     void Update() {
-        if (Input.GetButtonDown("Use"))
+        if (Input.GetButtonDown("Use") && canUse == true)
         {
             StartCoroutine(Use());
             PerformUseAction();
@@ -54,6 +56,7 @@ public class playerCharacterController_v2 : MonoBehaviour {
 
     IEnumerator Use()
     {
+        canUse = false;
         animator.SetBool("isMoving", false);
         animator.SetBool("isUsing", true);
         canMove = false;
@@ -61,6 +64,8 @@ public class playerCharacterController_v2 : MonoBehaviour {
         yield return new WaitForSeconds(useActionDuration);
         canMove = true;
         animator.SetBool("isUsing", false);
+        yield return new WaitForSeconds(0.2f);
+        canUse = true;
         Debug.Log("Use button pressed");
     }
 
